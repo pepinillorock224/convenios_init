@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datos - Búsqueda</title>
+    <link rel="stylesheet" href="estilos/datos.css">
+    
+</head>
+<body>
+    <div class="container">
+        <h2>Búsqueda de Datos</h2>
+        <div class="search-container">
+            <input type="text" id="search" onkeyup="filtrarTabla()" placeholder="Buscar por nombre, placa o documento...">
+        </div>
+        <div class="table-container">
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Placa</th>
+                        <th>Documento</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div id="loader-container" class="loader-container">
+            <div class="loader"></div>
+            <p id="loading-text">Cargando...</p>
+        </div>
+        <span class="help-icon" onclick="mostrarAyuda()">❓</span>
+        <div id="help-message" class="help-message">
+            <p>descuento de $15.000 pesos</p>
+        </div>
+    </div>
+    <script>
+        function filtrarTabla() {
+            let input = document.getElementById("search").value.toLowerCase();
+            let rows = document.querySelectorAll("tbody tr");
+            
+            rows.forEach(row => {
+                let text = row.innerText.toLowerCase();
+                row.style.display = text.includes(input) ? "" : "none";
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            var url = "https://script.google.com/macros/s/AKfycbwu9nppljcs2BPEmOa0dxdteMonv4_FpA8DeUZDdrH5rMBTUm-TvQtSRMu6e0vlKpMKtw/exec"; 
+            const table = document.getElementById("dataTable").getElementsByTagName('tbody')[0];
+            const loaderContainer = document.getElementById("loader-container");
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Datos recibidos:", data);
+                    
+                    data.forEach(item => {
+                        let row = table.insertRow();
+                        row.insertCell(0).textContent = item.NOMBRE;
+                        row.insertCell(1).textContent = item.PLACA;
+                        row.insertCell(2).textContent = item.DOCUMENTO;
+                    });
+
+                    loaderContainer.style.display = "none"; 
+                })
+                .catch(error => {
+                    console.error("Error al obtener datos:", error);
+                    loaderContainer.innerHTML = "<p style='color: red;'>Error al cargar los datos</p>";
+                });
+        });
+
+        function mostrarAyuda() {
+            let mensaje = document.getElementById("help-message");
+            mensaje.style.display = mensaje.style.display === "block" ? "none" : "block";
+        }
+    </script>
+</body>
+</html>
